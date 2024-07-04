@@ -3,8 +3,9 @@ use crate::math::*;
 use frame_support::IterableStorageDoubleMap;
 use sp_std::vec;
 use substrate_fixed::types::{I32F32, I64F64, I96F32};
+use codec::Encode;
 
-
+#[derive(Clone, Encode)]
 pub enum EpochReturnType<T: Config> {
     EmissionData(Vec<(T::AccountId, u64, u64)>),
     IncentiveData(Vec<I32F32>),
@@ -357,7 +358,7 @@ impl<T: Config> Pallet<T> {
     ///     - Print debugging outputs.
     ///
     #[allow(clippy::indexing_slicing)]
-    pub fn epoch(netuid: u16, return_incentive_data: Option<bool>) -> EpochReturnType<T> {
+    pub fn epoch(netuid: u16, return_incentive_data: Option<bool>) -> Option<EpochReturnType<T>> {
 
         let return_incentive_data = return_incentive_data.unwrap_or(false);
 
@@ -699,9 +700,9 @@ impl<T: Config> Pallet<T> {
 
         // Emission tuples ( hotkeys, server_emission, validator_emission )
         if return_incentive_data{
-            EpochReturnType::IncentiveData(incentive.clone())
+            Some(EpochReturnType::IncentiveData(incentive).clone())
         }else{
-            EpochReturnType::EmissionData(
+            Some(EpochReturnType::EmissionData(
                 hotkeys
                     .into_iter()
                     .map(|(uid_i, hotkey)| {
@@ -712,7 +713,7 @@ impl<T: Config> Pallet<T> {
                         )
                     })
                     .collect()
-                )
+                ))
 
         }
         

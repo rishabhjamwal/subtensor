@@ -39,6 +39,7 @@ pallet-utility = { workspace = true }
 ndarray = { workspace = true }
 hex = { workspace = true }
 
+
 # Used for sudo decentralization
 pallet-collective = { version = "4.0.0-dev", default-features = false, path = "../collective" }
 pallet-membership = { workspace = true }
@@ -52,6 +53,7 @@ sp-tracing = { workspace = true }
 parity-util-mem = { workspace = true, features = ["primitive-types"] }
 rand = { workspace = true }
 sp-core = { workspace = true }
+
 
 [features]
 default = ["std"]

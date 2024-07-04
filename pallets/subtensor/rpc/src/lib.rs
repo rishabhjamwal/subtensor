@@ -241,6 +241,6 @@ where
         
 
         api.subtensor_epoch(at, netuid, return_incentive_data)
-            .map_err(|e| Error::RuntimeError(format!("Unable to call epoch: {:?}", e)).into())
+            .map_err(|e| Error::RuntimeError(format!("Unable to call epoch huhuhu: {:?}", e)).into())
     }
 }

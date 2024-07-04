@@ -152,7 +152,7 @@ impl<T: Config> Pallet<T> {
                 Self::coinbase(cut.to_num::<u64>());
             }
             // --- 5. Add remaining amount to the network's pending emission.
-            PendingEmission::<T>::mutate(netuid, | mut queued| *queued += remaining.to_num::<u64>());
+            PendingEmission::<T>::mutate(netuid, |queued| *queued += remaining.to_num::<u64>());
             log::debug!(
                 "netuid_i: {:?} queued_emission: +{:?} ",
                 netuid,
@@ -183,7 +183,7 @@ impl<T: Config> Pallet<T> {
             );
 
             match emission_tuples_this_block {
-                epoch::EpochReturnType::EmissionData(data) => {
+                Some(epoch::EpochReturnType::EmissionData(data)) => {
                     let emission_sum: u128 = data
                         .iter()
                         .map(|(_account_id, ve, se)| *ve as u128 + *se as u128)
@@ -201,8 +201,13 @@ impl<T: Config> Pallet<T> {
                     }
                     LoadedEmission::<T>::insert(netuid, concat_emission_tuples);
                 }
-                epoch::EpochReturnType::IncentiveData(data) => {
+                Some(epoch::EpochReturnType::IncentiveData(data)) => {
                     log::warn!("Incentive data received where emission data expected");
+                }
+                None =>{
+                    log::warn!("No data recieved");
+                    
+
                 }
             }
             // --- 11 Set counters.
