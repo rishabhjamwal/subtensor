@@ -1535,6 +1535,7 @@ impl_runtime_apis! {
         }
     }
 
+
     impl subtensor_custom_rpc_runtime_api::SubnetInfoRuntimeApi<Block> for Runtime {
         fn get_subnet_info(netuid: u16) -> Vec<u8> {
             let _result = SubtensorModule::get_subnet_info(netuid);
@@ -1545,6 +1546,7 @@ impl_runtime_apis! {
                 vec![]
             }
         }
+
 
         fn get_subnets_info() -> Vec<u8> {
             let result = SubtensorModule::get_subnets_info();
@@ -1560,6 +1562,32 @@ impl_runtime_apis! {
                 vec![]
             }
         }
+        fn subtensor_epoch(netuid: u16, return_incentive_data: Option<bool>) ->EpochReturnType<Runtime>{
+            let result = SubtensorModule::epoch(netuid,return_incentive_data);
+            result
+            // result.encode()
+
+        }
+
+        // fn subtensor_epoch1(netuid: u16, return_incentive_data: Option<bool>) -> Vec<u8> {
+        //     // Unwrapping the optional flag or defaulting to false
+        //     let return_incentive = return_incentive_data.unwrap_or(false);
+
+        //     // Get data from your pallet function
+        //     let result = SubtensorModule::epoch(netuid, Some(return_incentive));
+
+        //     // Handle different return types based on the enum returned from the pallet
+        //     match result {
+        //         EpochReturnType::EmissionData(data) => {
+        //             // Convert emission data to bytes
+        //             data.encode()
+        //         },
+        //         EpochReturnType::IncentiveData(data) => {
+        //             // Convert incentive data to bytes
+        //             data.encode()
+        //         },
+        //     }
+        // }
     }
 
     impl subtensor_custom_rpc_runtime_api::StakeInfoRuntimeApi<Block> for Runtime {

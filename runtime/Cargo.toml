@@ -94,6 +94,7 @@ sp-tracing = { workspace = true }
 
 [build-dependencies]
 substrate-wasm-builder = { workspace = true, optional = true }
+wasm-builder = "3.0.1"
 
 [features]
 default = ["std"]

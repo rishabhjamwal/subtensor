@@ -4,6 +4,11 @@ use frame_support::IterableStorageDoubleMap;
 use sp_std::vec;
 use substrate_fixed::types::{I32F32, I64F64, I96F32};
 
+
+pub enum EpochReturnType<T: Config> {
+    EmissionData(Vec<(T::AccountId, u64, u64)>),
+    IncentiveData(Vec<I32F32>),
+}
 impl<T: Config> Pallet<T> {
     /// Calculates reward consensus and returns the emissions for uids/hotkeys in a given `netuid`.
     /// (Dense version used only for testing purposes.)
@@ -352,7 +357,12 @@ impl<T: Config> Pallet<T> {
     ///     - Print debugging outputs.
     ///
     #[allow(clippy::indexing_slicing)]
-    pub fn epoch(netuid: u16, rao_emission: u64) -> Vec<(T::AccountId, u64, u64)> {
+    pub fn epoch(netuid: u16, return_incentive_data: Option<bool>) -> EpochReturnType<T> {
+
+        let return_incentive_data = return_incentive_data.unwrap_or(false);
+
+        let rao_emission: u64 = Self::get_rao_emission();
+        log::trace!("rao_emission: {:?}", rao_emission);
         // Get subnetwork size.
         let n: u16 = Self::get_subnetwork_n(netuid);
         log::trace!("n: {:?}", n);
@@ -532,7 +542,7 @@ impl<T: Config> Pallet<T> {
 
         // Normalize bonds delta.
         inplace_col_normalize_sparse(&mut bonds_delta, n); // sum_i b_ij = 1
-                                                           // log::trace!( "ΔB (norm): {:?}", &bonds_delta );
+                                                           // log::trace!( "ΔB (norm): {:?}", bonds_delta );
 
         // Compute bonds moving average.
         let bonds_moving_average: I64F64 =
@@ -688,18 +698,29 @@ impl<T: Config> Pallet<T> {
             });
 
         // Emission tuples ( hotkeys, server_emission, validator_emission )
-        hotkeys
-            .into_iter()
-            .map(|(uid_i, hotkey)| {
-                (
-                    hotkey,
-                    server_emission[uid_i as usize],
-                    validator_emission[uid_i as usize],
+        if return_incentive_data{
+            EpochReturnType::IncentiveData(incentive.clone())
+        }else{
+            EpochReturnType::EmissionData(
+                hotkeys
+                    .into_iter()
+                    .map(|(uid_i, hotkey)| {
+                        (
+                            hotkey,
+                            server_emission[uid_i as usize],
+                            validator_emission[uid_i as usize],
+                        )
+                    })
+                    .collect()
                 )
-            })
-            .collect()
-    }
 
+        }
+        
+    }
+   
+    pub fn get_rao_emission() ->u64 {
+        100000
+    }
     pub fn get_float_rho(netuid: u16) -> I32F32 {
         I32F32::from_num(Self::get_rho(netuid))
     }
