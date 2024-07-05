@@ -1562,7 +1562,7 @@ impl_runtime_apis! {
                 vec![]
             }
         }
-        fn subtensor_epoch(netuid: u16, return_incentive_data: Option<bool>) -> Vec<u8>{
+        fn get_subtensor_epoch(netuid: u16, return_incentive_data: Option<bool>) -> Vec<u8>{
             let _result = SubtensorModule::epoch(netuid,return_incentive_data);
             if _result.is_some() {
                 let result = _result.expect("Could not get epoch");
